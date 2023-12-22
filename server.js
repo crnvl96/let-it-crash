@@ -10,6 +10,7 @@ const log = (msg) => console.log(`pid: [${process.pid}] - ${msg}`);
 knownErrors.forEach(({ exitCode, event }) => {
   process.on(event, (error) => {
     log(`Process exiting due to ${event}`, error.message);
+
     if (exitCode === UNKNOWN_ERROR) {
       process.exit(exitCode);
       // process.abort() - generates an stacktrace for a deeper analysis
@@ -17,6 +18,7 @@ knownErrors.forEach(({ exitCode, event }) => {
     }
 
     process.exit(exitCode);
+    return;
   });
 });
 
@@ -24,7 +26,11 @@ log("Process started");
 
 const connectToDB = async () => {
   const random = Math.random();
-  if (random < 0.5) return Promise.reject("Could not connect to DB");
+
+  if (random < 0.3) {
+    return Promise.reject("Could not connect to DB");
+  }
+
   log("DB connected with success");
 };
 
