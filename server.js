@@ -7,6 +7,12 @@ const knownErrors = [
 
 const log = (msg) => console.log(`pid: [${process.pid}] - ${msg}`);
 
+process.on("exit", (code) => {
+  log(`Server Closed with success`);
+  log(`DB Closed with success`);
+  return process.exit(code);
+});
+
 knownErrors.forEach(({ exitCode, event }) => {
   process.on(event, (error) => {
     log(`Process exiting due to ${event}`, error.message);
@@ -24,6 +30,7 @@ knownErrors.forEach(({ exitCode, event }) => {
 
 log("Process started");
 
+let counter = 0;
 const connectToDB = async () => {
   const random = Math.random();
 
@@ -32,6 +39,10 @@ const connectToDB = async () => {
   }
 
   log("DB connected with success");
+
+  if (++counter > 3) {
+    return process.exit(0);
+  }
 };
 
 setInterval(() => connectToDB(), 300);
